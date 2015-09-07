@@ -1,0 +1,47 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 23
+    buildToolsVersion "23.0.0"
+
+    defaultConfig {
+        minSdkVersion 15
+        targetSdkVersion 23
+        versionCode 1
+        versionName "1.0"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    packagingOptions {
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/NOTICE.txt'
+    }
+    lintOptions {
+        abortOnError false
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+
+    // jetty
+    //compile 'org.eclipse.jetty:jetty-server:8.1.17.v20150415'
+    //compile 'org.eclipse.jetty:jetty-servlet:8.1.17.v20150415'
+
+}
+// ./gradlew jarserver:clean jarserver:assembleDebug jarserver:makeJar
+task clearJar(type: Delete) {
+    delete 'build/libs/jarserver.jar'
+}
+task makeJar(type: Copy) {
+    from(zipTree('libs/jetty-8.1.17.jar'))
+    from('build/intermediates/bundles/release/')
+    into('release/')
+    include('classes.jar')
+    rename('classes.jar', 'jarserver.jar')
+}
+makeJar.dependsOn(clearJar, build)
